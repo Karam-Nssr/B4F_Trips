@@ -20,7 +20,7 @@ const reservationSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: [true, "CreatedBy is required"],
+      default: null,
     },
     passengerName: {
       type: String,
@@ -31,6 +31,33 @@ const reservationSchema = new mongoose.Schema(
       type: String,
       required: [true, "Passenger phone is required"],
       trim: true,
+    },
+    nationalId: {
+      type: String,
+      trim: true,
+      validate: {
+        validator: function (value) {
+          return !this.createdBy || Boolean(value);
+        },
+        message: "National ID is required for guest reservations",
+      },
+    },
+    bookingReference: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true,
+    },
+    paymentMethod: {
+      type: String,
+      enum: ["SIMULATED_ONLINE"],
+    },
+    paymentStatus: {
+      type: String,
+      enum: ["PAID"],
+    },
+    paidAt: {
+      type: Date,
     },
     status: {
       type: String,

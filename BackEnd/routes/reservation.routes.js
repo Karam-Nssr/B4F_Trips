@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   createReservation,
+  checkout,
   getAllReservations,
   getMyReservations,
   getReservationById,
@@ -8,9 +9,14 @@ import {
 } from "../controllers/reservation.controller.js";
 import authenticate from "../middleware/auth.middleware.js";
 import authorize from "../middleware/role.middleware.js";
-import { validateCreateReservation } from "../validators/reservation.validator.js";
+import {
+  validateCreateReservation,
+  validateCheckout,
+} from "../validators/reservation.validator.js";
 
 const router = Router();
+
+router.post("/checkout", validateCheckout, checkout);
 
 // POST — ADMIN, EMPLOYEE, USER
 router.post(

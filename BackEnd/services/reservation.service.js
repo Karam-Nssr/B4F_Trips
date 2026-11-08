@@ -2,6 +2,133 @@ import Reservation from "../models/Reservation.model.js";
 import Trip from "../models/Trip.model.js";
 import Seat from "../models/Seat.model.js";
 
+const simulatePayment = ({ amount, paymentMethod }) => {
+  if (paymentMethod !== "SIMULATED_ONLINE") {
+    const error = new Error("Unsupported payment method.");
+    error.statusCode = 400;
+    throw error;
+  }
+  if (!Number.isFinite(amount) || amount < 0) {
+    const error = new Error("Invalid payment amount.");
+    error.statusCode = 400;
+    throw error;
+  }
+  return { success: true, paidAt: new Date() };
+};
+
+const createBookingReference = (reservationId) =>
+  `BR-${new Date().getFullYear()}-${reservationId
+    .toString()
+    .slice(-6)
+    .toUpperCase()}`;
+
+const checkout = async ({
+  tripId,
+  seatId,
+  passengerName,
+  passengerPhone,
+  nationalId,
+  paymentMethod,
+}) => {
+  const trip = await Trip.findById(tripId).populate(
+    "bus",
+    "busNumber isActive",
+  );
+  if (!trip) {
+    const error = new Error("Trip not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+  if (trip.status !== "SCHEDULED") {
+    const error = new Error("This trip is not available for booking.");
+    error.statusCode = 409;
+    throw error;
+  }
+
+  const seat = await Seat.findById(seatId);
+  if (!seat) {
+    const error = new Error("Seat not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+  if (!seat.isActive || !trip.bus || !trip.bus.isActive) {
+    const error = new Error("This seat is no longer available.");
+    error.statusCode = 409;
+    throw error;
+  }
+  if (seat.bus.toString() !== trip.bus._id.toString()) {
+    const error = new Error(
+      "This seat does not belong to the bus assigned to this trip.",
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const payment = simulatePayment({
+    amount: trip.price,
+    paymentMethod,
+  });
+
+  const existingReservation = await Reservation.findOne({
+    trip: tripId,
+    seat: seatId,
+    status: "CONFIRMED",
+  });
+  if (existingReservation) {
+    const error = new Error("This seat is already reserved for this trip.");
+    error.statusCode = 409;
+    throw error;
+  }
+
+  let reservation;
+  try {
+    reservation = await Reservation.create({
+      trip: tripId,
+      seat: seatId,
+      createdBy: null,
+      user: null,
+      passengerName,
+      passengerPhone,
+      nationalId,
+      paymentMethod,
+      paymentStatus: "PAID",
+      paidAt: payment.paidAt,
+      status: "CONFIRMED",
+    });
+    reservation.bookingReference = createBookingReference(reservation._id);
+    await reservation.save();
+  } catch (err) {
+    if (err.code === 11000) {
+      const error = new Error(
+        "This seat was just reserved by someone else. Please select another seat.",
+      );
+      error.statusCode = 409;
+      throw error;
+    }
+    throw err;
+  }
+
+  return {
+    bookingReference: reservation.bookingReference,
+    reservationId: reservation._id,
+    status: reservation.status,
+    paymentStatus: reservation.paymentStatus,
+    passengerName: reservation.passengerName,
+    passengerPhone: reservation.passengerPhone,
+    nationalId: reservation.nationalId,
+    seatNumber: seat.seatNumber,
+    trip: {
+      from: trip.from,
+      to: trip.to,
+      departureDate: trip.departureDate,
+      departureTime: trip.departureTime,
+      price: trip.price,
+      busNumber: trip.bus.busNumber,
+    },
+    paidAt: reservation.paidAt,
+  };
+};
+
 const createReservation = async ({
   tripId,
   seatId,
@@ -183,6 +310,7 @@ const getReservationById = async (id, requestingUser) => {
     }
   } else if (requestingUser.role === "EMPLOYEE") {
     if (
+      !reservation.createdBy ||
       reservation.createdBy._id.toString() !== requestingUser._id.toString()
     ) {
       const error = new Error(
@@ -219,7 +347,10 @@ const cancelReservation = async (id, requestingUser) => {
   }
 
   if (requestingUser.role === "EMPLOYEE") {
-    if (reservation.createdBy.toString() !== requestingUser._id.toString()) {
+    if (
+      !reservation.createdBy ||
+      reservation.createdBy.toString() !== requestingUser._id.toString()
+    ) {
       const error = new Error(
         "You can only cancel reservations that you created.",
       );
@@ -235,6 +366,7 @@ const cancelReservation = async (id, requestingUser) => {
 
 export {
   createReservation,
+  checkout,
   getAllReservations,
   getMyReservations,
   getReservationById,

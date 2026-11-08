@@ -22,6 +22,30 @@ const createReservation = async (req, res, next) => {
   }
 };
 
+const checkout = async (req, res, next) => {
+  try {
+    const {
+      tripId,
+      seatId,
+      fullName,
+      phone,
+      nationalId,
+      paymentMethod,
+    } = req.body;
+    const ticket = await reservationService.checkout({
+      tripId,
+      seatId,
+      passengerName: fullName,
+      passengerPhone: phone,
+      nationalId,
+      paymentMethod,
+    });
+    res.status(201).json(ticket);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getAllReservations = async (req, res, next) => {
   try {
     const { page, limit, tripId, status } = req.query;
@@ -101,6 +125,7 @@ const cancelReservation = async (req, res, next) => {
 
 export {
   createReservation,
+  checkout,
   getAllReservations,
   getMyReservations,
   getReservationById,
