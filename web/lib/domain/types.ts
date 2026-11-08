@@ -44,7 +44,7 @@ export type Schedule = Trip & {
 export type Reservation = {
   _id: string;
   trip: (Trip & { bus?: BusSummary | EntityRef }) | EntityRef;
-  seat: { seatNumber: string; row: number } | EntityRef;
+  seat: { _id: string; seatNumber: string; row: number } | EntityRef;
   passengerName: string;
   passengerPhone: string;
   status: "CONFIRMED" | "CANCELLED";

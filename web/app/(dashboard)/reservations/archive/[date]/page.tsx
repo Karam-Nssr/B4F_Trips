@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/shared/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { listAllReservations } from "@/features/reservations/reservations.api";
 import { formatArchiveDate, isValidDateOnly } from "@/lib/domain/dates";
-import type { Reservation } from "@/lib/domain/types";
+import type { Reservation, Trip } from "@/lib/domain/types";
 import { isPopulated } from "@/lib/domain/types";
 import { requireSession } from "@/lib/auth/session";
 
@@ -43,7 +43,7 @@ const ReservationArchiveDayPage = async ({
     `/reservations/archive/${date}/${tripId}${filterQuery ? `?${filterQuery}` : ""}`;
   const backHref = `/reservations${date === "unknown" ? "" : `?departureDate=${date}`}${filterQuery ? `${date === "unknown" ? "?" : "&"}${filterQuery}` : ""}`;
   const tripGroups = new Map<string, {
-    trip: Extract<Reservation["trip"], { _id: string }> | null;
+    trip: Trip | null;
     total: number;
     confirmed: number;
     cancelled: number;
