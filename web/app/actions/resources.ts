@@ -20,7 +20,7 @@ import {
   tripSchema,
 } from "@/features/trips/trips.schemas";
 import { createUserSchema, updateUserSchema } from "@/features/users/users.schemas";
-import { BUS_CONFIGS } from "@/features/trips/trips.constants";
+import { BUS_CONFIGS } from "@/features/buses/buses.constants";
 import type { Trip } from "@/lib/domain/types";
 import { getDateKey, isBeforeBusinessDate } from "@/lib/domain/dates";
 

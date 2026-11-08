@@ -21,7 +21,7 @@ export const LoginForm = ({ next, initialError }: LoginFormProps) => {
   );
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="space-y-5">
       {next && <input type="hidden" name="next" value={next} />}
       {state.error && (
         <p
@@ -32,8 +32,8 @@ export const LoginForm = ({ next, initialError }: LoginFormProps) => {
         </p>
       )}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-700" htmlFor="email">
-          Email
+        <label className="text-sm font-medium text-slate-800" htmlFor="email">
+          Work email
         </label>
         <Input
           id="email"
@@ -46,7 +46,7 @@ export const LoginForm = ({ next, initialError }: LoginFormProps) => {
       </div>
       <div className="space-y-2">
         <label
-          className="text-sm font-medium text-slate-700"
+          className="text-sm font-medium text-slate-800"
           htmlFor="password"
         >
           Password
@@ -60,10 +60,12 @@ export const LoginForm = ({ next, initialError }: LoginFormProps) => {
           placeholder="••••••••"
         />
       </div>
-      <SubmitButton className="w-full">Continue to dashboard</SubmitButton>
-      <div className="text-center text-sm text-slate-500">
-        Staff access only. Customers should use the mobile app.
-      </div>
+      <SubmitButton className="mt-1 h-12 w-full">
+        Sign in to staff workspace
+      </SubmitButton>
+      <p className="text-center text-xs text-slate-500">
+        Your account role and access are managed by your administrator.
+      </p>
     </form>
   );
 };

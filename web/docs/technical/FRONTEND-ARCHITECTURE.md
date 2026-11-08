@@ -61,6 +61,9 @@ primitives there; keep feature-specific pieces beside their feature. Existing
 button and badge variants use `class-variance-authority`; `cn` is the shared
 Tailwind class-merging helper.
 
+Visual tokens and the documented Figma/API boundary are maintained in
+[`docs/design-system/design-system.md`](../design-system/design-system.md).
+
 Use Server Components by default. Keep browser state in small Client
 Components. Use native forms and Server Actions for simple forms; use React
 Hook Form with Zod when field-level client validation is useful. Use TanStack

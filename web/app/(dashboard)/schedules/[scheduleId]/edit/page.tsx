@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 
 import { PageHeader } from "@/components/shared/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScheduleForm } from "@/features/trips/schedule-form";
 import { listBuses } from "@/features/buses/buses.api";
 import { getSchedule } from "@/features/trips/schedules.api";
@@ -25,13 +24,11 @@ const EditSchedulePage = async ({
   return (
     <>
       <PageHeader title="Edit recurring schedule" description="Update the recurring trip template." />
-      <Card><CardHeader><CardTitle>Schedule configuration</CardTitle></CardHeader><CardContent className="space-y-4">
-        <ScheduleForm
-          action="update-schedule"
-          buses={busResult.items}
-          initial={{ ...schedule, bus }}
-        />
-      </CardContent></Card>
+      <ScheduleForm
+        action="update-schedule"
+        buses={busResult.items}
+        initial={{ ...schedule, bus }}
+      />
     </>
   );
 };

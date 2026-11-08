@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ActionForm } from "@/components/shared/action-form";
 import { SubmitButton } from "@/components/shared/submit-button";
 import { Input } from "@/components/ui/input";
-import { BUS_CONFIGS } from "@/features/trips/trips.constants";
+import { BUS_CONFIGS } from "@/features/buses/buses.constants";
 import type { ResourceAction } from "@/app/actions/resources";
 
 type BusFormProps = {

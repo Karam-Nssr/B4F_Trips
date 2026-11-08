@@ -16,7 +16,7 @@ const BusesPage = async ({
 
   return (
     <>
-      <PageHeader title="Buses" description="Bus capacity follows the selected physical layout." actions={<Link href="/buses/new"><Button>New bus</Button></Link>} />
+      <PageHeader title="Buses & seats" description="Manage fleet buses and review their assigned physical layouts." actions={<div className="flex flex-wrap gap-2"><Link href="/buses/layouts" className="inline-flex h-10 items-center justify-center rounded-md border border-slate-300 bg-white px-4 text-sm font-medium text-slate-800 hover:bg-slate-50">Seat layouts</Link><Link href="/buses/new"><Button>New bus</Button></Link></div>} />
       <Card>
         <CardContent className="p-0">
           <div className="overflow-x-auto">

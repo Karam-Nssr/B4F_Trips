@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { PageHeader } from "@/components/shared/page-header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { listAllTrips } from "@/features/trips/trips.api";
 import { isPopulated } from "@/lib/domain/types";
 import { requireSession } from "@/lib/auth/session";
@@ -54,26 +54,74 @@ const TripsPage = async ({
     if (value) archiveParams.set(key, value);
   }
   const archiveQuery = archiveParams.toString();
+  const summary = [
+    {
+      label: "Departure days",
+      value: archiveDays.length,
+      detail: "Grouped by travel date",
+    },
+    {
+      label: "Trips in view",
+      value: trips.length,
+      detail: "Matching current filters",
+    },
+    {
+      label: "Scheduled",
+      value: trips.filter((trip) => trip.status === "SCHEDULED").length,
+      detail: "Open for staff actions",
+    },
+    {
+      label: "Cancelled",
+      value: trips.filter((trip) => trip.status === "CANCELLED").length,
+      detail: "Not available for booking",
+    },
+  ];
 
   return (
     <>
       <PageHeader
-        title="Trip archives"
-        description="Browse departures grouped by their travel date."
+        title="Trip management"
+        description="Plan departures, monitor trip archives, and keep routes on track."
         actions={
           user.role === "ADMIN" ? (
             <Link href="/trips/new">
-              <Button>New trip</Button>
+              <Button> + Create trip</Button>
             </Link>
           ) : undefined
         }
       />
 
-      <Card>
-        <CardContent className="p-0">
-          <form action="/trips" className="space-y-4 border-b border-slate-200 p-4">
-            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              <label className="space-y-1.5 text-sm font-medium text-slate-700" htmlFor="trip-from">
+      <div className="mb-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {summary.map((item) => (
+          <Card key={item.label}>
+            <CardContent className="p-4">
+              <p className="text-sm text-slate-500">{item.label}</p>
+              <p className="mt-2 text-3xl font-medium tracking-tight text-slate-900">
+                {item.value}
+              </p>
+              <p className="mt-1 text-xs text-slate-500">{item.detail}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Card className="mb-5">
+        <CardHeader className="flex-row items-center justify-between space-y-0 px-4 pb-0 pt-4">
+          <CardTitle className="text-sm">Filter departures</CardTitle>
+          <Link
+            href="/trips"
+            className="text-xs font-semibold text-primary hover:underline"
+          >
+            Reset filters
+          </Link>
+        </CardHeader>
+        <CardContent className="p-4">
+          <form action="/trips" className="space-y-4">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 ">
+              <label
+                className="space-y-1.5 text-sm font-medium text-slate-700"
+                htmlFor="trip-from"
+              >
                 Departure city
                 <select
                   id="trip-from"
@@ -82,13 +130,21 @@ const TripsPage = async ({
                   className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm font-normal text-slate-900"
                 >
                   <option value="">All departure cities</option>
-                  {filters.from && !SYRIAN_CITIES.some((city) => city === filters.from) && (
-                    <option value={filters.from}>{filters.from}</option>
-                  )}
-                  {SYRIAN_CITIES.map((city) => <option key={city} value={city}>{city}</option>)}
+                  {filters.from &&
+                    !SYRIAN_CITIES.some((city) => city === filters.from) && (
+                      <option value={filters.from}>{filters.from}</option>
+                    )}
+                  {SYRIAN_CITIES.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
                 </select>
               </label>
-              <label className="space-y-1.5 text-sm font-medium text-slate-700" htmlFor="trip-to">
+              <label
+                className="space-y-1.5 text-sm font-medium text-slate-700"
+                htmlFor="trip-to"
+              >
                 Destination city
                 <select
                   id="trip-to"
@@ -97,13 +153,21 @@ const TripsPage = async ({
                   className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm font-normal text-slate-900"
                 >
                   <option value="">All destination cities</option>
-                  {filters.to && !SYRIAN_CITIES.some((city) => city === filters.to) && (
-                    <option value={filters.to}>{filters.to}</option>
-                  )}
-                  {SYRIAN_CITIES.map((city) => <option key={city} value={city}>{city}</option>)}
+                  {filters.to &&
+                    !SYRIAN_CITIES.some((city) => city === filters.to) && (
+                      <option value={filters.to}>{filters.to}</option>
+                    )}
+                  {SYRIAN_CITIES.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
                 </select>
               </label>
-              <label className="space-y-1.5 text-sm font-medium text-slate-700" htmlFor="trip-date">
+              <label
+                className="space-y-1.5 text-sm font-medium text-slate-700"
+                htmlFor="trip-date"
+              >
                 Departure date
                 <input
                   id="trip-date"
@@ -113,7 +177,10 @@ const TripsPage = async ({
                   className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm font-normal text-slate-900"
                 />
               </label>
-              <label className="space-y-1.5 text-sm font-medium text-slate-700" htmlFor="trip-bus-class">
+              <label
+                className="space-y-1.5 text-sm font-medium text-slate-700"
+                htmlFor="trip-bus-class"
+              >
                 Bus class
                 <select
                   id="trip-bus-class"
@@ -127,7 +194,10 @@ const TripsPage = async ({
                   <option value="BUSINESS">Business</option>
                 </select>
               </label>
-              <label className="space-y-1.5 text-sm font-medium text-slate-700" htmlFor="trip-min-fare">
+              <label
+                className="space-y-1.5 text-sm font-medium text-slate-700"
+                htmlFor="trip-min-fare"
+              >
                 Minimum fare per seat (SYP)
                 <input
                   id="trip-min-fare"
@@ -138,7 +208,10 @@ const TripsPage = async ({
                   className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-sm font-normal text-slate-900"
                 />
               </label>
-              <label className="space-y-1.5 text-sm font-medium text-slate-700" htmlFor="trip-max-fare">
+              <label
+                className="space-y-1.5 text-sm font-medium text-slate-700"
+                htmlFor="trip-max-fare"
+              >
                 Maximum fare per seat (SYP)
                 <input
                   id="trip-max-fare"
@@ -151,15 +224,20 @@ const TripsPage = async ({
               </label>
             </div>
             <div className="flex flex-wrap justify-end gap-2">
-              <Link
-                href="/trips"
-                className="inline-flex h-10 items-center justify-center rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50"
-              >
-                Clear filters
-              </Link>
               <Button type="submit">Apply filters</Button>
             </div>
           </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex-row items-center justify-between space-y-0 px-4 py-4">
+          <CardTitle className="text-base">Departure day archives</CardTitle>
+          <span className="text-xs text-slate-500">
+            {archiveDays.length} {archiveDays.length === 1 ? "day" : "days"}
+          </span>
+        </CardHeader>
+        <CardContent className="p-0">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200 text-left text-sm">
               <thead className="bg-slate-50 text-slate-600">
@@ -167,7 +245,9 @@ const TripsPage = async ({
                   <th className="px-4 py-3 font-medium">Departure date</th>
                   <th className="px-4 py-3 font-medium">Trips</th>
                   <th className="px-4 py-3 font-medium">Total seats</th>
-                  <th className="px-4 py-3 font-medium">Potential full-capacity fare</th>
+                  <th className="px-4 py-3 font-medium">
+                    Potential full-capacity fare
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
@@ -184,7 +264,9 @@ const TripsPage = async ({
                       </td>
                       <td className="px-4 py-3">{archive.tripCount}</td>
                       <td className="px-4 py-3">{archive.capacity}</td>
-                      <td className="px-4 py-3">{archive.potentialFare.toLocaleString()} SYP</td>
+                      <td className="px-4 py-3">
+                        {archive.potentialFare.toLocaleString()} SYP
+                      </td>
                     </tr>
                   ))
                 ) : (

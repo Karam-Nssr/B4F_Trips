@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "B4F Trips Admin Portal",
+  title: "Nawa Admin Portal",
   description: "Intercity bus management and reservation system",
 };
 

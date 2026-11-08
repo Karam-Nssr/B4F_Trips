@@ -8,7 +8,7 @@ export type StatusBadgeProps = {
 const statusStyles: Record<string, "default" | "success" | "warning" | "danger" | "muted"> = {
   SCHEDULED: "default",
   COMPLETED: "success",
-  CANCELLED: "warning",
+  CANCELLED: "danger",
   CONFIRMED: "success",
   ACTIVE: "default",
   INACTIVE: "muted",

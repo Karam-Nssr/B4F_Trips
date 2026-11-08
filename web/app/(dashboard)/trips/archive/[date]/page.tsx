@@ -30,10 +30,12 @@ const TripArchiveDayPage = async ({
     minPrice: typeof query.minPrice === "string" ? query.minPrice : undefined,
     maxPrice: typeof query.maxPrice === "string" ? query.maxPrice : undefined,
   };
-  const trips = (await listAllTrips({
-    ...filters,
-    departureDate: date,
-  }))
+  const trips = (
+    await listAllTrips({
+      ...filters,
+      departureDate: date,
+    })
+  )
     .filter((trip) => !trip.schedule?.isRecurring)
     .sort((first, second) =>
       first.departureTime.localeCompare(second.departureTime),
@@ -55,7 +57,10 @@ const TripArchiveDayPage = async ({
         title={`Trips · ${formatArchiveDate(date)}`}
         description={`${trips.length} departure(s) · Potential full-capacity fare ${potentialFare.toLocaleString()} SYP`}
         actions={
-          <Link className="text-sm font-medium text-primary hover:underline" href={`/trips${archiveQuery ? `?${archiveQuery}` : ""}`}>
+          <Link
+            className="text-sm font-medium text-primary hover:underline"
+            href={`/trips${archiveQuery ? `?${archiveQuery}` : ""}`}
+          >
             Back to trip archives
           </Link>
         }
@@ -77,43 +82,69 @@ const TripArchiveDayPage = async ({
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
-                {trips.length ? trips.map((trip) => {
-                  const bus = isPopulated(trip.bus) ? trip.bus : null;
-                  const capacity = bus?.capacity ?? 0;
-                  return (
-                    <tr key={trip._id} className="hover:bg-slate-50">
-                      <td className="px-4 py-3">
-                        <Link className="font-medium text-slate-900 hover:text-primary" href={`/trips/${trip._id}`}>
-                          {trip.from} → {trip.to}
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3">{trip.departureTime}</td>
-                      <td className="px-4 py-3">{bus ? `${bus.busNumber} · ${bus.busClass}` : "Bus details unavailable"}</td>
-                      <td className="px-4 py-3">{trip.price.toLocaleString()} SYP</td>
-                      <td className="px-4 py-3">{capacity || "—"}</td>
-                      <td className="px-4 py-3">{(trip.price * capacity).toLocaleString()} SYP</td>
-                      <td className="px-4 py-3"><StatusBadge status={trip.status} /></td>
-                      <td className="px-4 py-3">
-                        {trip.status === "SCHEDULED" && !trip.schedule?.isRecurring ? (
+                {trips.length ? (
+                  trips.map((trip) => {
+                    const bus = isPopulated(trip.bus) ? trip.bus : null;
+                    const capacity = bus?.capacity ?? 0;
+                    return (
+                      <tr key={trip._id} className="hover:bg-slate-50">
+                        <td className="px-4 py-3">
                           <Link
-                            href={`/trips/${trip._id}/book`}
-                            className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 text-sm font-medium text-white hover:bg-blue-700"
+                            className="font-medium text-slate-900 hover:text-primary"
+                            href={`/trips/${trip._id}`}
                           >
-                            Reserve seats for passengers
+                            {trip.from} → {trip.to}
                           </Link>
-                        ) : (
-                          <span className="text-slate-500">Unavailable</span>
-                        )}
-                        {user.role === "ADMIN" && (
-                          <Link className="ml-3 text-primary hover:underline" href={`/trips/${trip._id}`}>
-                            Details
-                          </Link>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                }) : (
-                  <tr><td className="px-4 py-8 text-center text-slate-500" colSpan={8}>No trips found for this day.</td></tr>
+                        </td>
+                        <td className="px-4 py-3">{trip.departureTime}</td>
+                        <td className="px-4 py-3">
+                          {bus
+                            ? `${bus.busNumber} · ${bus.busClass}`
+                            : "Bus details unavailable"}
+                        </td>
+                        <td className="px-4 py-3">
+                          {trip.price.toLocaleString()} SYP
+                        </td>
+                        <td className="px-4 py-3">{capacity || "—"}</td>
+                        <td className="px-4 py-3">
+                          {(trip.price * capacity).toLocaleString()} SYP
+                        </td>
+                        <td className="px-4 py-3">
+                          <StatusBadge status={trip.status} />
+                        </td>
+                        <td className="px-4 py-3">
+                          {trip.status === "SCHEDULED" &&
+                          !trip.schedule?.isRecurring ? (
+                            <Link
+                              href={`/trips/${trip._id}/book`}
+                              className="inline-flex h-9 items-center justify-center rounded-md bg-primary px-3 py-8 text-sm font-medium text-white hover:bg-blue-700"
+                            >
+                              Reserve seats for passengers
+                            </Link>
+                          ) : (
+                            <span className="text-slate-500">Unavailable</span>
+                          )}
+                          {user.role === "ADMIN" && (
+                            <Link
+                              className="ml-3 text-primary hover:underline"
+                              href={`/trips/${trip._id}`}
+                            >
+                              Details
+                            </Link>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td
+                      className="px-4 py-8 text-center text-slate-500"
+                      colSpan={8}
+                    >
+                      No trips found for this day.
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>

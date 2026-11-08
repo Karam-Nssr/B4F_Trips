@@ -8,11 +8,11 @@ const DashboardLayout = async ({ children }: { children: ReactNode }) => {
   const user = await requireSession();
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="flex min-h-screen flex-col bg-background md:flex-row">
       <Sidebar role={user.role} />
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="order-1 flex min-w-0 flex-1 flex-col md:order-2">
         <Topbar role={user.role} name={user.name} />
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 xl:p-10">{children}</main>
       </div>
     </div>
   );
