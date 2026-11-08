@@ -5,9 +5,6 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
-    "splash": {
-      "backgroundColor": "#F5F7FB"
-    },
     "ios": {
       "supportsTablet": true
     },
@@ -15,7 +12,6 @@
       "package": "com.training.busreservation"
     },
     "plugins": [
-      "expo-status-bar",
       "expo-router"
     ]
   }
