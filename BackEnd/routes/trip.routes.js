@@ -40,8 +40,8 @@ router.delete(
 );
 
 // ── Trip routes ───────────────────────────────────────────────────────────────
-router.get("/", authenticate, getAllTrips);
-router.get("/:id", authenticate, getTripById);
+router.get("/", getAllTrips);
+router.get("/:id", getTripById);
 router.post(
   "/",
   authenticate,

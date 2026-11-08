@@ -17,6 +17,6 @@ router.get(
 );
 
 // GET /api/trips/:tripId/seats — All authenticated roles
-router.get("/trips/:tripId/seats", authenticate, getSeatsByTrip);
+router.get("/trips/:tripId/seats", getSeatsByTrip);
 
 export default router;

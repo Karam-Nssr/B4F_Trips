@@ -11,7 +11,6 @@ export const reservationService = {
       const layout = getMockSeats(trip);
       const seat = layout.seats.find(item => item._id === payload.seatId);
       if (!seat || seat.status !== 'AVAILABLE') throw new Error('This seat is no longer available. Please choose another seat.');
-      // Demo-only: payment succeeds locally and returns a confirmed, paid ticket.
       return createMockTicket(payload, trip, seat);
     }
     return request<Ticket>('/reservations/checkout', { method: 'POST', body: JSON.stringify(payload) });
