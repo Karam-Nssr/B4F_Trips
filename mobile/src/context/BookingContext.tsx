@@ -6,11 +6,7 @@ import React, {
   useState,
 } from 'react';
 
-import {
-  PassengerInfo,
-  Ticket,
-} from '../types/booking';
-
+import { PassengerInfo, Ticket } from '../types/booking';
 import { Trip } from '../types/trip';
 import { Seat } from '../types/seat';
 
@@ -20,11 +16,18 @@ type BookingState = {
   passengers: Record<string, PassengerInfo>;
   ticket: Ticket | null;
 
-  setTrip: (v: Trip | null) => void;
-  setSeats: (v: Seat[]) => void;
-  setPassengers: (v: Record<string, PassengerInfo>) => void;
-  updatePassenger: (seatId: string, passenger: PassengerInfo) => void;
-  setTicket: (v: Ticket | null) => void;
+  setTrip: (value: Trip | null) => void;
+  setSeats: (value: Seat[]) => void;
+  setPassengers: React.Dispatch<
+    React.SetStateAction<Record<string, PassengerInfo>>
+  >;
+
+  updatePassenger: (
+    seatId: string,
+    passenger: PassengerInfo,
+  ) => void;
+
+  setTicket: (value: Ticket | null) => void;
   reset: () => void;
 };
 
@@ -35,8 +38,9 @@ export function BookingProvider({
 }: React.PropsWithChildren) {
   const [trip, setTrip] = useState<Trip | null>(null);
   const [seats, setSeats] = useState<Seat[]>([]);
-  const [passengers, setPassengers] =
-    useState<Record<string, PassengerInfo>>({});
+  const [passengers, setPassengers] = useState<
+    Record<string, PassengerInfo>
+  >({});
   const [ticket, setTicket] = useState<Ticket | null>(null);
 
   const updatePassenger = (

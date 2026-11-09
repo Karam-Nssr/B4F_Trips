@@ -46,10 +46,6 @@ export default function SeatSelectionScreen({
       setLoading(true);
       setError('');
 
-      // Start a fresh selection when opening this screen for a trip.
-      setSeats([]);
-      setPassengers({});
-
       try {
         const result = await seatService.getSeats(trip._id);
 

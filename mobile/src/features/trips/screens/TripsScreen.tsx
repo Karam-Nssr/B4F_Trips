@@ -8,7 +8,6 @@ import { colors } from '../../../core/theme/colors';
 import { tripService } from '../../../services/tripService';
 import { Trip } from '../../../types/trip';
 import { formatDate, formatMoney } from '../../../utils/format';
-import { USE_MOCK_DATA } from '../../../core/config/api';
 
 export default function TripsScreen({ navigation, route }: TabScreenProps<'TripsTab'>) {
   const params = route.params || {};
@@ -47,10 +46,14 @@ export default function TripsScreen({ navigation, route }: TabScreenProps<'Trips
       <PrimaryButton title="Search trips" onPress={() => load()}/>
     </View>
     <View style={styles.resultsHeader}><Text style={styles.resultsTitle}>Available trips</Text><Text style={styles.count}>{trips.length} found</Text></View>
-    {USE_MOCK_DATA ? <Text style={styles.demo}>Showing sample trips for demonstration</Text> : null}
     {loading ? <ActivityIndicator size="large" color={colors.primary} style={{ marginTop: 30 }}/> : error ? <Text style={styles.error}>{error}</Text> : trips.length === 0 ? <View style={styles.emptyCard}><Text style={styles.emptyIcon}>⌕</Text><Text style={styles.emptyTitle}>No trips found</Text><Text style={styles.empty}>Try another city or travel date.</Text></View> : trips.map(trip => {
       const bus = typeof trip.bus === 'string' ? null : trip.bus;
-      return <Pressable key={trip._id} style={styles.trip} onPress={() => navigation.navigate('TripDetails' as never, { tripId: trip._id } as never)}>
+      return <Pressable key={trip._id} style={styles.trip} 
+      onPress={() =>
+  navigation.navigate('TripDetails', {
+    tripId: trip._id,
+  })
+}>
         <View style={styles.route}><Text style={styles.city}>{trip.from}</Text><Text style={styles.arrow}>→</Text><Text style={styles.city}>{trip.to}</Text></View>
         <View style={styles.line}/>
         <View style={styles.detailsRow}><View><Text style={styles.metaLabel}>DEPARTURE</Text><Text style={styles.meta}>{formatDate(trip.departureDate)}</Text><Text style={styles.time}>{trip.departureTime}</Text></View><View style={styles.right}><Text style={styles.metaLabel}>BUS CLASS</Text><Text style={styles.meta}>{bus?.busClass?.replace('_', ' ') || 'Bus'}</Text><Text style={styles.seats}>{trip.availableSeats ?? '—'} seats available</Text></View></View>
