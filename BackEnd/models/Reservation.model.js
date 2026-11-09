@@ -66,7 +66,7 @@ const reservationSchema = new mongoose.Schema(
       default: "CONFIRMED",
     },
   },
-  { timestamps: true },
+  { timestamps: true, autoIndex: false },
 );
 
 // One CONFIRMED reservation per trip+seat.
