@@ -3,20 +3,32 @@ export interface PassengerInfo {
   phone: string;
   nationalId: string;
 }
-export interface CheckoutRequest extends PassengerInfo {
-  tripId: string;
+
+export interface SeatPassenger {
   seatId: string;
+  seatNumber: string;
+  passenger: PassengerInfo;
+}
+
+export interface CheckoutRequest {
+  tripId: string;
+  passengers: SeatPassenger[];
   paymentMethod: 'SIMULATED_ONLINE';
 }
+
+export interface TicketPassenger extends PassengerInfo {
+  seatId: string;
+  seatNumber: string;
+}
+
 export interface Ticket {
   bookingReference: string;
   reservationId: string;
   status: 'CONFIRMED';
   paymentStatus: 'PAID';
-  passengerName: string;
-  passengerPhone: string;
-  nationalId?: string;
-  seatNumber: string;
+  passengers: TicketPassenger[];
+  totalAmount: number;
+  paidAt?: string;
   trip: {
     from: string;
     to: string;
@@ -25,5 +37,4 @@ export interface Ticket {
     price: number;
     busNumber?: string;
   };
-  paidAt?: string;
 }

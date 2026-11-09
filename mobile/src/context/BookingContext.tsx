@@ -1,26 +1,92 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
-import { PassengerInfo, Ticket } from '../types/booking';
+
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
+
+import {
+  PassengerInfo,
+  Ticket,
+} from '../types/booking';
+
 import { Trip } from '../types/trip';
 import { Seat } from '../types/seat';
 
 type BookingState = {
-  trip: Trip | null; seat: Seat | null; passenger: PassengerInfo | null; ticket: Ticket | null;
-  setTrip: (v: Trip | null) => void; setSeat: (v: Seat | null) => void;
-  setPassenger: (v: PassengerInfo | null) => void; setTicket: (v: Ticket | null) => void;
+  trip: Trip | null;
+  seats: Seat[];
+  passengers: Record<string, PassengerInfo>;
+  ticket: Ticket | null;
+
+  setTrip: (v: Trip | null) => void;
+  setSeats: (v: Seat[]) => void;
+  setPassengers: (v: Record<string, PassengerInfo>) => void;
+  updatePassenger: (seatId: string, passenger: PassengerInfo) => void;
+  setTicket: (v: Ticket | null) => void;
   reset: () => void;
 };
+
 const BookingContext = createContext<BookingState | null>(null);
-export function BookingProvider({ children }: React.PropsWithChildren) {
+
+export function BookingProvider({
+  children,
+}: React.PropsWithChildren) {
   const [trip, setTrip] = useState<Trip | null>(null);
-  const [seat, setSeat] = useState<Seat | null>(null);
-  const [passenger, setPassenger] = useState<PassengerInfo | null>(null);
+  const [seats, setSeats] = useState<Seat[]>([]);
+  const [passengers, setPassengers] =
+    useState<Record<string, PassengerInfo>>({});
   const [ticket, setTicket] = useState<Ticket | null>(null);
-  const reset = () => { setTrip(null); setSeat(null); setPassenger(null); setTicket(null); };
-  const value = useMemo(() => ({ trip, seat, passenger, ticket, setTrip, setSeat, setPassenger, setTicket, reset }), [trip, seat, passenger, ticket]);
-  return <BookingContext.Provider value={value}>{children}</BookingContext.Provider>;
+
+  const updatePassenger = (
+    seatId: string,
+    passenger: PassengerInfo,
+  ) => {
+    setPassengers(previous => ({
+      ...previous,
+      [seatId]: passenger,
+    }));
+  };
+
+  const reset = () => {
+    setTrip(null);
+    setSeats([]);
+    setPassengers({});
+    setTicket(null);
+  };
+
+  const value = useMemo(
+    () => ({
+      trip,
+      seats,
+      passengers,
+      ticket,
+      setTrip,
+      setSeats,
+      setPassengers,
+      updatePassenger,
+      setTicket,
+      reset,
+    }),
+    [trip, seats, passengers, ticket],
+  );
+
+  return (
+    <BookingContext.Provider value={value}>
+      {children}
+    </BookingContext.Provider>
+  );
 }
+
 export function useBooking() {
   const value = useContext(BookingContext);
-  if (!value) throw new Error('useBooking must be used inside BookingProvider');
+
+  if (!value) {
+    throw new Error(
+      'useBooking must be used inside BookingProvider',
+    );
+  }
+
   return value;
 }
