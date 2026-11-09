@@ -10,13 +10,11 @@ const createReservation = async (req, res, next) => {
       passengerPhone,
       requestingUser: req.user,
     });
-    res
-      .status(201)
-      .json({
-        success: true,
-        message: "Reservation created successfully.",
-        data: reservation,
-      });
+    res.status(201).json({
+      success: true,
+      message: "Reservation created successfully.",
+      data: reservation,
+    });
   } catch (error) {
     next(error);
   }
@@ -24,23 +22,18 @@ const createReservation = async (req, res, next) => {
 
 const checkout = async (req, res, next) => {
   try {
-    const {
-      tripId,
-      seatId,
-      fullName,
-      phone,
-      nationalId,
-      paymentMethod,
-    } = req.body;
+    const { tripId, passengers, paymentMethod } = req.body;
     const ticket = await reservationService.checkout({
       tripId,
-      seatId,
-      passengerName: fullName,
-      passengerPhone: phone,
-      nationalId,
+      passengers,
       paymentMethod,
     });
-    res.status(201).json(ticket);
+
+    res.status(201).json({
+      success: true,
+      message: "Payment completed and seats reserved successfully.",
+      data: ticket,
+    });
   } catch (error) {
     next(error);
   }
@@ -93,13 +86,11 @@ const getReservationById = async (req, res, next) => {
       req.params.id,
       req.user,
     );
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Reservation retrieved successfully.",
-        data: reservation,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Reservation retrieved successfully.",
+      data: reservation,
+    });
   } catch (error) {
     next(error);
   }
@@ -111,13 +102,11 @@ const cancelReservation = async (req, res, next) => {
       req.params.id,
       req.user,
     );
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "Reservation cancelled successfully.",
-        data: reservation,
-      });
+    res.status(200).json({
+      success: true,
+      message: "Reservation cancelled successfully.",
+      data: reservation,
+    });
   } catch (error) {
     next(error);
   }

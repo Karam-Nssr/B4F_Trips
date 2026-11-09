@@ -42,11 +42,12 @@ const reservationSchema = new mongoose.Schema(
         message: "National ID is required for guest reservations",
       },
     },
+    // Shared by every seat reservation belonging to the same checkout.
+    // It must NOT be unique because one booking can contain multiple seats.
     bookingReference: {
       type: String,
-      unique: true,
-      sparse: true,
       trim: true,
+      index: true,
     },
     paymentMethod: {
       type: String,
@@ -68,7 +69,7 @@ const reservationSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-// Partial unique index: one CONFIRMED reservation per trip+seat
+// One CONFIRMED reservation per trip+seat.
 reservationSchema.index(
   { trip: 1, seat: 1 },
   {
